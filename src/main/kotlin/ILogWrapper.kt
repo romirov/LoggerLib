@@ -1,29 +1,11 @@
 package ru.loggerlib
 
-import kotlinx.serialization.Serializable
 import ru.loggerlib.config.LogLevel
-
-@Serializable
-sealed class LogObj
-
-@Serializable
-data class BasicLoggingObj(
-    val msg: String = "",
-    val objs: Map<String, String>? = null,
-) : LogObj()
-
-data class ExtendedLoggingObj(
-    val msg: String = "",
-    val e: Throwable? = null,
-    val data: Any? = null,
-    val objs: Map<String, Any>? = null,
-) : LogObj()
+import ru.loggerlib.entity.ExtendedLogObj
+import ru.loggerlib.entity.LogObj
 
 interface ILogWrapper {
-    fun log(
-        logObj: LogObj,
-        logLevel: LogLevel = LogLevel.TRACE,
-    )
+    fun log(logObj: LogObj, logLevel: LogLevel = LogLevel.TRACE)
 
     fun error(logObj: LogObj) = log(logObj, LogLevel.ERROR)
 
@@ -44,9 +26,9 @@ interface ILogWrapper {
     } catch (e: Throwable) {
         val logObj =
             if (defaultMsg.isNotBlank()) {
-                ExtendedLoggingObj(defaultMsg, e)
+                ExtendedLogObj(defaultMsg, e)
             } else {
-                ExtendedLoggingObj(e = e)
+                ExtendedLogObj(e = e)
             }
 
         log(logObj, LogLevel.ERROR)
